@@ -1,0 +1,15 @@
+/* Declaração da struct e das funções do TAD CIRCULO*/
+#ifndef CIRCULO_H
+    #define CIRCULO_H
+    #include "ponto.h"
+
+    typedef struct circulo_ CIRCULO;
+
+    /* Funções para manipulação do circulo: */
+    CIRCULO *circulo_criar (PONTO *p, float raio);
+    bool circulo_set_ponto (CIRCULO *c, PONTO *p);
+    bool circulo_set_raio (CIRCULO *c, float raio);
+    PONTO *circulo_get_ponto (CIRCULO *c);
+    float circulo_get_raio (CIRCULO *c);
+    void circulo_apagar (CIRCULO **circulo);
+#endif
