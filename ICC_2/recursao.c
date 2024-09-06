@@ -96,6 +96,49 @@ void torreDeHanoi(int n, char origem, char destino, char temporaria){
     }
 }
 
+// função recursiva que une dois arrays ordenados de forma ordenada
+void merge(int v1[], int v2[], int n1, int n2, int v3[]){
+    if(n1 == 0 && n2 == 0){
+        return;
+    }
+    else if(n1 == 0){
+        v3[0] = v2[0];
+        merge(v1, ++v2, n1, --n2, ++v3);
+    }
+    else if(n2 == 0){
+        v3[0] = v1[0];
+        merge(++v1, v2, --n1, n2, ++v3);
+    }
+    else if(v1[0] <= v2[0]){
+        v3[0] = v1[0];
+        merge(++v1, v2, --n1, n2, ++v3);
+    }
+    else if(v1[0] > v2[0]){
+        v3[0] = v2[0];
+        merge(v1, ++v2, n1, --n2, ++v3);
+    }
+}
+
+// lista encadeada e funções para imprimir normal e reversa
+typedef struct node node;
+struct node{
+    int n;
+    node *next;
+};
+
+void printList(node *head){
+    printf("%d ", head->n);
+
+    if(head->next == NULL) return;
+    else printList(head->next);
+}
+
+void printReverseList(node *head){
+    if(head->next != NULL) printReverseList(head->next);
+
+    printf("%d ", head->n);
+}
+
 int main(){
     // testa somaAte
     int num;
@@ -120,4 +163,21 @@ int main(){
     int n2;
     scanf("%d", &n2);
     torreDeHanoi(n2, 'A', 'C', 'B');
+
+    //testa merge
+    int v1[] = {1, 10, 15, 20, 22, 30};
+    int v2[] = {3, 12, 13, 16, 25};
+    int v3[11];
+    merge(v1, v2, 6, 5, v3);
+    for(int i=0; i<11; i++){
+        printf("%d ", v3[i]);
+    }
+
+    //teste printList e printReverseList
+    node no1, no2, no3;
+    no1.n = 1; no2.n = 2; no3.n = 3;
+    no1.next = &no2; no2.next = &no3; no3.next = NULL;
+    printList(&no1);
+    printf("\n");
+    printReverseList(&no1);
 }

@@ -1,33 +1,24 @@
-// Como passa vetor por referencia ??? e como utilizar ponteiro pra percorrer vetor ???? (vergonha de ICC I T-T )
-
 #include <stdio.h>
 #include <stdlib.h>
 
-void printVetor(int v[]){
-    int n = *v;
-    printf("%d\n", n);
-    *v = 50;
-}
-
-void print2(int **v){
-    //printf("%d", **v);
+void printVetor(int *v){
+    printf("%d\n", v[2]);
+    *(v+1) = 50;
 }
 
 int main(){
-    int *v;
+    int *v = malloc(5*sizeof(int));
     v[0] = 2;
     v[1] = 3;
     v[2] = 4;
-
-    int *p = v;
     
     printVetor(v);
-    printf("%d\n", *(v));
+    printf("%d\n", *(v+1));
 
-    int *v2 = (int *)malloc(sizeof(int)*5);
-    // *v2 = 1;
-    // *(v2+1) = 2;
-    // *(v2+2) = 3;
-
-    //print2(&v2);
+    int v2[] = {10, 20, 30};
+    int *p = v2;
+    
+    for(int i=0; i<3; i++){
+        printf("%d ", *(p+i));
+    }
 }
