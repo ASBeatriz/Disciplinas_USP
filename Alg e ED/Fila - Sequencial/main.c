@@ -25,4 +25,12 @@ int main(){
     ITEM* removido = fila_remover(fila);
     printf("item removido: %d\n", *((int *)item_get_dados(removido)));
     fila_imprimirInt(fila);
+
+    if(fila == NULL) printf ("Fila apagada\n");
+    else printf("Fila nao apagada\n");
+    
+    fila_apagar(&fila);
+    
+    if(fila == NULL) printf ("Fila apagada\n");
+    else printf("Fila nao apagada\n");
 }

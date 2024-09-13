@@ -48,6 +48,7 @@ bool fila_inserir(FILA* fila, ITEM *item){
     return false;
 }
 
+// Desaloca o nó e retorna o item removido
 ITEM* fila_remover(FILA *fila){
     if(!fila_vazia(fila) && fila != NULL){
         NO* noInicio = fila->inicio;
@@ -84,6 +85,29 @@ bool fila_vazia(FILA* fila){
         return (fila_tamanho(fila) == 0);
     }
     return false;
+}
+
+/* Apaga a fila
+algoritmo: 
+chama a função de remover o item da fila até que a fila esteja vazia (inicio == NULL) 
+e vai apagando os itens removidos. Por fim, desaloca a estrutura Fila.
+*/
+void fila_apagar(FILA **fila){
+    if(*fila == NULL) return;
+    while((*fila)->inicio != NULL){
+        ITEM *itRemovido = fila_remover(*fila); //função fila_remover já desaloca o nó
+        item_apagar(&itRemovido);
+    }
+    free(*fila);
+    *fila = NULL; //faz o conteudo para o qual (**fila) aponta receber NULL
+    /* Se fosse:
+        fila_apagar(*fila){
+        ...
+        fila = NULL
+        }
+       Então o que receberia NULL seria a cópia do ponteiro *fila, e não o ponteio 
+       em si passado como parâmatro da função.
+     */
 }
 
 void fila_imprimirInt(FILA* fila){

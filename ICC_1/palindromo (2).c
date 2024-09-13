@@ -2,7 +2,7 @@
 
 // 97 a 122
 int main()
-{s
+{
     int n,v[26];
     scanf(" %d",&n);
 

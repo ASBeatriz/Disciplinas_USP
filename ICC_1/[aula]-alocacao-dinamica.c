@@ -19,7 +19,7 @@ int main(){
     p = (int *)calloc(1,4);  // supondo inteiro de 4 bytes
     p = (int *)calloc(1,sizeof(int)); //portabilidade
     
-    printf("%d\n", calloc(1,4));
+    printf("%p\n", calloc(1,4));
 
 //----------- exemplo: alocação de vetor ---------------------------
         //calloc
@@ -33,12 +33,12 @@ int main(){
     t = (int *)malloc(n*sizeof(int));
 
     printf("\n");
-    for(int i=0; i<n; i++) printf("%d ", t[i]);
+    for(int i=0; i<n; i++) printf("%d ", *(t+0));
 
 //------------ modo correto de usar calloc ou malloc ----------------------
 
     if((t = (int *)malloc(100000000000000)) == NULL){ //faz a atribuição e verifica se foi mal sucedida
-        printf("\nSem memoria");
+        printf("\nSem memoria\n");
         exit(1); //ou outro método de tratar o erro
     }
 
@@ -62,7 +62,7 @@ Senão, retorna NULL.
     int *c; //fazer com outro ponteiro, pois caso não dê certo, o ponteiro vai receber NULL e perder o endereço anterior
 
     if((c = (int *)(realloc(b,14*sizeof(int)))) == NULL){
-        printf("Sem memoria");
+        printf("Sem memoria\n");
         exit(1);
     }
     else{

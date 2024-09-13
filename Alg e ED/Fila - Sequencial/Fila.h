@@ -12,6 +12,7 @@ ITEM* fila_remover(FILA *fila);
 int fila_tamanho(FILA *fila);
 bool fila_cheia(FILA *fila);
 bool fila_vazia(FILA *fila);
+void fila_apagar(FILA **fila);
 
 void fila_imprimirInt(FILA* fila); //criada para a main
 
