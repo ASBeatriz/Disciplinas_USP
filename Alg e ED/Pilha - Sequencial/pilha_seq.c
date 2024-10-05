@@ -68,15 +68,13 @@ ITEM *pilha_topo(PILHA_S *pilha){
     return NULL;
 }
 
-// Como printar tipo ITEM ?????
-// void pilha_print(PILHA_S *pilha){
-//     if(pilha != NULL){
-//         for(int i=0; i<pilha->tamanho; i++){
-//             printf("%*", pilha->itens[i]);
-//         }
-//     }
-//     exit(1);
-// }
+void pilha_inverter(PILHA_S *pilha){
+    if(pilha == NULL) return;
 
-
-//void pilha_inverter(PILHA_S *p);
+    int tamanho = pilha->tamanho;
+    for(int i=0; i < tamanho/2; i++){
+        ITEM* aux = pilha->itens[i];
+        pilha->itens[i] = pilha->itens[(tamanho-1) - i];
+        pilha->itens[(tamanho-1)-i] = aux;
+    }
+}
