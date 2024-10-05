@@ -19,7 +19,14 @@ DEQUE* deque_criar(){
 }
 
 void deque_apagar(DEQUE** deque){
-
+    if(*deque != NULL){
+        while(deque_contar(*deque) > 0){
+            ITEM* removido = deque_remover_fim(*deque);
+            item_apagar(&removido);
+        }
+        free(*deque);
+        *deque = NULL;      
+    }
 }
 
 bool deque_inserir_inicio(DEQUE* deque, ITEM* item){
@@ -65,6 +72,7 @@ ITEM* deque_remover_fim(DEQUE* deque){
         deque->itens[novo_fim] == NULL;
         
         deque->tamanho--;
+        deque->fim = novo_fim;
         return removido;
     }
     return NULL;
