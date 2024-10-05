@@ -51,11 +51,13 @@ bool fila_inserir(FILA* fila, ITEM *item){
 // Desaloca o nó e retorna o item removido
 ITEM* fila_remover(FILA *fila){
     if(!fila_vazia(fila) && fila != NULL){
-        NO* noInicio = fila->inicio;
-        ITEM *removido = noInicio->item;
-        fila->inicio = noInicio->prox;
+        NO* noRemovido = fila->inicio;
+        ITEM *removido = noRemovido->item;
+        fila->inicio = noRemovido->prox;
+        if(fila->fim == noRemovido) fila->fim = NULL;   //se a pessoa (nó) removida for a única da fila, então o fim da fila passa a ser nulo
+
         fila->tamanho--;
-        free(noInicio); // é necessário?
+        free(noRemovido); noRemovido = NULL;
 
         return removido;
     }
