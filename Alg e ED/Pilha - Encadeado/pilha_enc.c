@@ -50,8 +50,6 @@ ITEM *pilha_desempilhar(PILHA *pilha){
 void pilha_apagar(PILHA **pilha){
     if(*pilha != NULL){
         while((*pilha)->topo != NULL){
-            // NO *noTopo = (*pilha)->topo;
-            // ITEM *itemTopo = noTopo->item;
             ITEM *itemTopo = pilha_desempilhar(*pilha);     //função desaloca o nó e retorna o item
             item_apagar(&itemTopo);     //desaloca o item
         }
@@ -79,7 +77,7 @@ bool pilha_cheia(PILHA *pilha){
 
 int pilha_tamanho(PILHA *pilha){
     if(pilha != NULL) return pilha->tam;
-    return NULL;
+    return -1;
 }
 
 ITEM *pilha_topo(PILHA *pilha){
@@ -89,3 +87,13 @@ ITEM *pilha_topo(PILHA *pilha){
     return NULL;
 }
 
+void inverter_recursivo(PILHA *pilha, NO* atual, NO* prox){
+    NO* aux = atual->anterior;
+    atual->anterior = prox;
+    if(aux != NULL) inverter_recursivo(pilha, aux, atual);
+    else pilha->topo = atual;
+}
+
+void pilha_inverter(PILHA *pilha){
+    inverter_recursivo(pilha, pilha->topo, NULL);
+}

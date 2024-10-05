@@ -5,6 +5,7 @@
         "stdlib.h": "c",
         "stdio.h": "c",
         "pilha.h": "c",
-        "item.h": "c"
+        "item.h": "c",
+        "string.h": "c"
     }
 }

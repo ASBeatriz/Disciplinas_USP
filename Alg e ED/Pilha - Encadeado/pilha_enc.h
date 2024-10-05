@@ -14,8 +14,7 @@
     ITEM *pilha_topo(PILHA *pilha);
     bool pilha_empilhar(PILHA *pilha, ITEM *item);
     ITEM *pilha_desempilhar(PILHA *pilha);
-    // void pilha_print(PILHA *p);
-    // void pilha_inverter(PILHA *p);
-    
+
+    void pilha_inverter(PILHA *pilha);
 
 #endif
