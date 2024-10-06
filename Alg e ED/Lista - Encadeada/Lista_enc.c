@@ -1,3 +1,4 @@
+//Implemantação TAD Lista - Simplesmente Encadeada
 #include "Lista_enc.h"
 
 struct no{
@@ -92,42 +93,35 @@ bool lista_inserir(LISTA *lista, ITEM *item){
     return (lista->ordenada ? inserir_ordenado(lista, item) : inserir_nao_ordenado(lista, item));
 }
 
-
+// implementação mais eficiente (prof)
 ITEM *lista_remover(LISTA *lista, int chave){ 
     if(lista != NULL && !lista_vazia(lista)){
         ITEM *removido;
-        NO* noBusca = lista->inicio;
-
-        //remoção no inicio
-        int chaveBusca = item_get_chave(noBusca->item);
-        if(chaveBusca == chave){
-            NO* aux = noBusca;
-            removido = noBusca->item;
-            lista->inicio = noBusca->prox;
-            if(noBusca->prox == NULL) lista->fim == NULL;   //se o nó do início era o único nó
-            free(aux);
-            aux = NULL;
+        NO* noAtual = lista->inicio;
+        NO* noAnt = NULL;
+        while(noAtual != NULL && item_get_chave(noAtual->item) != chave){
+            noAnt = noAtual;
+            noAtual = noAtual->prox;
+        }
+        if(noAtual != NULL){
+            if(noAtual == lista->inicio){
+                lista->inicio = noAtual->prox;
+            }
+            else{
+                noAnt->prox = noAtual->prox;
+            }
+            if(noAtual == lista->fim){
+                lista->fim = noAnt;
+            }
+            // para todos os casos:
+            removido = noAtual->item;
+            noAtual->prox = NULL;
+            free(noAtual);
+            noAtual = NULL; //meio q n precisa né
             lista->tamanho--;
             return removido;
         }
-        for(int i=0; i<(lista->tamanho - 1); i++){
-            int proxChaveBusca = item_get_chave(noBusca->prox->item);
-            // remoção no meio ou fim (?)
-            if(proxChaveBusca == chave){    //se o nó após esse (noBusca->prox) corresponde à chave
-                NO *aux = noBusca->prox;
-                noBusca->prox = noBusca->prox->prox;
-
-                //se o nó após esse é o último, ou seja, se o que passa a ser o próx do nó atual é NULL, então o fim é mudado para o nó atual
-                if(noBusca->prox == NULL) lista->fim = noBusca; 
-
-                removido = aux->item;
-                free(aux);
-                aux = NULL;
-                lista->tamanho--;
-                return removido;
-            }
-            noBusca = noBusca->prox;
-        }
+        
     }
 }
 

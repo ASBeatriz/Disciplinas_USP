@@ -1,3 +1,4 @@
+//Implemantação TAD Lista - Duplamente Encadeada
 #include "Lista_dup_enc.h"
 
 struct no{
@@ -129,50 +130,43 @@ bool lista_inserir(LISTA *lista, ITEM *item, char posicao){
     }
 }
 
-
+// implementação do prof (mais eficiente e fácil de entender)
 ITEM *lista_remover(LISTA *lista, int chave){ 
     if(lista != NULL && !lista_vazia(lista)){
         ITEM *removido;
         NO* noBusca = lista->inicio;
 
-        //remoção no inicio
-        int chaveBusca = item_get_chave(noBusca->item);
-        if(chaveBusca == chave){
-            NO* aux = noBusca;
-            removido = noBusca->item;
-
-            lista->inicio = noBusca->prox;
-            if(noBusca->prox == NULL){  //se o removido for o único da lista
-                lista->fim = NULL;
+        // loop para encontrar o nó procurado (acaba quando o nó for encontrado ou quando a fila acabar)
+        while(noBusca != NULL && item_get_chave(noBusca->item) != chave){
+            noBusca = noBusca->prox;
+        }
+        // se achou a chave
+        if(noBusca != NULL){
+            // se tiver no inicio da lista, mudo o inicio
+            if(lista->inicio == noBusca){
+                lista->inicio = noBusca->prox;
             }
+                // senão, eu posso alterar o ponteiro do anterior
             else{
-                noBusca->prox->anterior = NULL;
+                noBusca->anterior->prox = noBusca->prox;
             }
-            free(aux);
-            aux = NULL;
+            
+            // se tiver no fim da fila, mudo o fim
+            if(lista->fim == noBusca){
+                lista->fim = noBusca->anterior;
+            }
+                // senão, eu posso alterar o ponteiro do próx
+            else{
+                noBusca->prox->anterior = noBusca->anterior;
+            }
+            // para todos os casos:
+            removido = noBusca->item;
+            noBusca->prox = NULL;
+            noBusca->anterior = NULL;
+            free(noBusca);
+            noBusca = NULL;
             lista->tamanho--;
             return removido;
-        }
-
-        // remoção no meio ou fim
-        noBusca = noBusca->prox;
-        while(noBusca != NULL){
-            int chaveBusca = item_get_chave(noBusca->item);
-            if(chaveBusca == chave){
-                if(noBusca == lista->fim){  //se o nó retirado estiver no fim da lista
-                    lista->fim = noBusca->anterior;
-                }
-                else{
-                    noBusca->prox->anterior = noBusca->anterior;
-                }
-                noBusca->anterior->prox = noBusca->prox;
-                removido = noBusca->item;
-                free(noBusca);
-                noBusca = NULL;
-                lista->tamanho--;
-                return removido;
-            }
-            noBusca = noBusca->prox;
         }
     }
 }
