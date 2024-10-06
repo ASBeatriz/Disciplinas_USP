@@ -2,7 +2,6 @@
 #define LISTA_ENC_H
 
 #include "item.h"
-#define TAM_MAX 100
 #define ERRO -1
 
 typedef struct lista LISTA;

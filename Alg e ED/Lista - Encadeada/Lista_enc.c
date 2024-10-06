@@ -104,6 +104,7 @@ ITEM *lista_remover(LISTA *lista, int chave){
             NO* aux = noBusca;
             removido = noBusca->item;
             lista->inicio = noBusca->prox;
+            if(noBusca->prox == NULL) lista->fim == NULL;   //se o nó do início era o único nó
             free(aux);
             aux = NULL;
             lista->tamanho--;
@@ -112,9 +113,13 @@ ITEM *lista_remover(LISTA *lista, int chave){
         for(int i=0; i<(lista->tamanho - 1); i++){
             int proxChaveBusca = item_get_chave(noBusca->prox->item);
             // remoção no meio ou fim (?)
-            if(proxChaveBusca == chave){
+            if(proxChaveBusca == chave){    //se o nó após esse (noBusca->prox) corresponde à chave
                 NO *aux = noBusca->prox;
                 noBusca->prox = noBusca->prox->prox;
+
+                //se o nó após esse é o último, ou seja, se o que passa a ser o próx do nó atual é NULL, então o fim é mudado para o nó atual
+                if(noBusca->prox == NULL) lista->fim = noBusca; 
+
                 removido = aux->item;
                 free(aux);
                 aux = NULL;
@@ -166,7 +171,7 @@ bool lista_apagar(LISTA **lista){
         //ITEM* itRemover = lista_remover(*lista, item_get_chave((*lista)->inicio->item));
         //item_apagar(&itRemover);
 
-        //forma 2 (sem função:
+        //forma 2 (sem função):
         NO* aux = (*lista)->inicio;                     //ponteiro auxiliar aponta para o nó a ser removido (inicio da lista)
         ITEM *itRemovido = aux->item;   
         item_apagar(&itRemovido);                       //apaga (desaloca) item do nó
