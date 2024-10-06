@@ -1,4 +1,4 @@
-// Programa cliente para testar o TAD Lista Sequencial
+// Programa cliente para testar o TAD Lista Duplamente Encadeada
 
 #include "Lista_dup_enc.h"
 #include <stdio.h>

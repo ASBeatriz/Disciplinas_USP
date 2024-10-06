@@ -1,3 +1,4 @@
+//Implemantação TAD Lista - Sequencial
 #include "Lista_seq.h"
 
 struct lista{
