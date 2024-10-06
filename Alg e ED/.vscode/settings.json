@@ -6,6 +6,7 @@
         "stdio.h": "c",
         "pilha.h": "c",
         "item.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "lista_dup_enc.h": "c"
     }
 }
