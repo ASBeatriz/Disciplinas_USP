@@ -1,4 +1,4 @@
-// Radix Sort - método de ordenação de inteiros processando-os dígito por dígito
+// Radix Sort adaptado para incluir números negativos
 #include <stdio.h>
 
 // função auxiliar para pegar o maior valor de um array
@@ -13,31 +13,38 @@ int getMax(int v[], int n){
 // counting sort para ordenar os elementos baseado em um de seus dígitos
 void countingSort(int v[], int n, int exp){
 
-    int counter[10] = {0};
+    // 0 a 18 => -9 a 9
+    int counter[19] = {0};
     
     // preenche o vetor counter
     for(int i=0; i<n; i++){
         int digito = (v[i]/exp)%10;
-        counter[digito]++;
+        counter[digito + 9]++;
     }
 
     // faz a soma acumulativa no vetor 
-    for(int i=1; i < 10; i++){
+    for(int i=1; i < 19; i++){
         counter[i] += counter[i-1];
     }
     
-    //imprime o vetor counter
-    // for(int i=0; i<max+1; i++){
+    // imprime o vetor counter
+    // printf("vetor counter: ");
+    // for(int i=0; i<18; i++){
     //     printf("%d ", counter[i]);
     // }
     // printf("\n");
     
-    // preenche o vetor ordenado baseado no vetor counter
+    
     int ordenado[n];
+    for(int i=0; i<n; i++){ //impede que posições não alteradas fiquem sem atribuição no vetor
+        ordenado[i] = v[i];
+    }
+
+    // preenche o vetor ordenado baseado no vetor counter
     for(int i=n-1; i >= 0; i--){
         int digito = (v[i]/exp)%10;
-        ordenado[counter[digito- 1]] = v[i]; 
-        counter[digito]--;  
+        ordenado[counter[(digito + 9)]-1] = v[i]; 
+        counter[digito+9]--;  
     }
 
     // imprime o vetor ordenado
@@ -48,7 +55,7 @@ void countingSort(int v[], int n, int exp){
     printf("\n");
 }
 
-// Função que aplica radix sort
+// Função que ordena os elementos processando-os dígito por dígito
 void radixSort(int v[], int n){
     int max = getMax(v, n);
 
@@ -64,6 +71,10 @@ int main(){
     for(int i=0; i<n; i++){
         scanf("%d", &v[i]);
     }
+    for(int i=0; i<n; i++){
+        printf("%d ", v[i]);
+    }
+    printf("\n");
 
     radixSort(v, n);
 }
