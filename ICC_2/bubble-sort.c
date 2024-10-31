@@ -42,19 +42,26 @@ void bubble_sort_rec(int *vec, int tam){
     }
 }
 
-int main(){
-    int tam, *vec;
+// Função para fazer a interação com o usuário. Retorna o vetor lido.
+int *interacao(int *tam){
     printf("Digite a quantidade de elementos: ");
-    scanf("%d", &tam);
-    vec = (int *)malloc(tam*sizeof(int));
+    scanf("%d", tam);
+    int *vec = (int *)malloc((*tam)*sizeof(int));
     
     printf("Digite os elementos: ");
-    for(int i=0; i<tam; i++){
+    for(int i=0; i<*tam; i++){
         scanf("%d", &vec[i]);
     }
+    return vec;
+}
+
+int main(){
+    int tam; 
+    int *vec = interacao(&tam);
 
     bubble_sort(vec, tam);
     bubble_sort_rec(vec, tam);
 
     imprimeVetor(vec, tam);
+    free(vec);
 }
