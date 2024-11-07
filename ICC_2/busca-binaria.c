@@ -8,15 +8,32 @@ void imprimeVetor(int vec[], int tam){
     printf("\n");
 }
 
-int buscaBin(int vec[], int x, int esq, int dir){
+int buscaBin_it(int vetor[],int tam, int x){
+    int meio, ini = 0, fim = tam-1;
+
+    while(ini <= fim){
+        meio = (ini+fim)/2;
+
+        if(vetor[meio] < x){
+            ini = meio + 1;
+        }
+        else if(vetor[meio] > x){
+            fim = meio - 1;
+        }
+        else return meio;
+    }
+    return -1; //caso de não achar
+}
+
+int buscaBin_rec(int vec[], int x, int esq, int dir){
     if(esq > dir) return -1;
     int meio = (esq+dir/2);
 
     if(vec[meio] < x)
-        return buscaBin(vec, x, esq+1, dir);
+        return buscaBin_rec(vec, x, esq+1, dir);
 
     else if(vec[meio] > x)
-        return buscaBin(vec, x, esq, dir-1);
+        return buscaBin_rec(vec, x, esq, dir-1);
 
     else
         return meio;
@@ -30,6 +47,8 @@ int main(){
     printf("Procure um elemento: ");
     scanf("%d", &x);
 
-    int pos = buscaBin(vec, x, 0, tam-1);
+    int pos = buscaBin_rec(vec, x, 0, tam-1);
+    // int pos = buscaBin_it(vec, tam, x);
+
     printf("Posição de %d: %d\n", x, pos);
 }
