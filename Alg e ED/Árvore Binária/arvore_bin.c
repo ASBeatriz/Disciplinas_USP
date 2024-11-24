@@ -32,17 +32,28 @@ void apagar(NO **no){
     if((*no) != NULL){
         apagar(&((*no)->esq));
         apagar(&((*no)->dir));
+        item_apagar(&((*no)->item));
         free(*no);
         *no = NULL;
     }
 }
 
-int verifica_estritamente_bin(NO *no){
-    if (no->dir == NULL && no->esq == NULL ) return 0;
-    else if(no->dir != NULL && no->esq != NULL){
-        return (verifica_estritamente_bin(no->esq) || verifica_estritamente_bin(no->dir));
-    }
-    else return 1;
+// int calc_profundidade(NO *no, int p){
+//     if(no != NULL){
+//         p++;
+//         int p1 = calc_profundidade(no->esq, p);
+//         int p2 = calc_profundidade(no->dir, p);
+//         p = ((p1 > p2)? p1 : p2);
+//     }
+//     return p;
+// }
+
+// Código do professor
+int calc_profundidade(NO *no) {
+    if (no == NULL) return -1;
+    int e = calc_profundidade(no->esq);
+    int d = calc_profundidade(no->dir);
+    return ((e > d) ? e : d) + 1;
 }
 
 void imprime_preordem(NO *raiz){
@@ -98,8 +109,11 @@ AB *ab_criar(){
 
 // Função para inserir um nó na árvore
 bool ab_inserir(AB *arvore, ITEM *item, int lado, int chave_pai){
+    if(arvore == NULL) return false;
+
     NO *no = (NO*)malloc(sizeof(NO));
-    if(arvore == NULL || no == NULL) return false;
+    if(no == NULL) return false;
+    
     no->item = item;
     no->dir = NULL;
     no->esq = NULL;
@@ -128,10 +142,9 @@ void ab_apagar(AB **arvore) {
     *arvore = NULL;
 }
 
-/*Essa função devolve 0 se a Árvore é estritamente binária e 1 caso contrário*/
-int ab_estritamente_binaria (AB *arvore){
-  if(arvore->raiz == NULL) return 0;
-  else return verifica_estritamente_bin(arvore->raiz);
+int ab_profundidade(AB *arvore){
+    // int p = -1;
+    return calc_profundidade(arvore->raiz);
 }
 
 // Função para imprimir a árvore
@@ -153,4 +166,35 @@ void ab_imprimir(AB *arvore, char str[]){
 // Função para imprimir cada nó e indicar seus filhos
 void ab_imprime_filhos(AB *arvore){
     percorre(arvore->raiz);
+}
+
+//--------------- Funções Exercícios RunCodes ----------------------------
+
+int verifica_estritamente_bin(NO *no){
+  if (no->dir == NULL && no->esq == NULL ) return 0;
+  else if(no->dir != NULL && no->esq != NULL){
+    return (verifica_estritamente_bin(no->esq) || verifica_estritamente_bin(no->dir));
+  }
+  // se encontrar algum nó com um só nó filho, retorna 1
+  else return 1;
+}
+
+// Verifica se a árvore é estritamente binária. Devolve 0 se for e 1 se não for.
+int ab_estritamente_binaria (AB *T){
+  if(T->raiz == NULL) return 0;
+  else return verifica_estritamente_bin(T->raiz);
+}
+
+// Verifica se a árvore é binária de busca: 0 = é abb, 1 = não é abb.
+int arvore_abb(NO *no, int min, int max){
+  if(no == NULL) return 0;
+
+  int val = item_get_chave(no->item);
+  if(val < min || val > max) return 1;
+  
+  return (arvore_abb(no->esq, min, val-1) && arvore_abb(no->dir, val+1, max)); 
+}
+
+int ab_checar_busca (AB *T){
+  return arvore_abb(T->raiz, INT_MIN, INT_MAX);
 }

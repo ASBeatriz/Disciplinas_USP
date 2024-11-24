@@ -1,5 +1,6 @@
 all: item.o arvore_bin.o main.o
 	gcc item.o arvore_bin.o main.o -o main -std=c99 -Wall
+	rm *.o
 
 item.o:
 	gcc -c item.c
@@ -14,4 +15,4 @@ run:
 	./main
 
 clean:
-	rm *.o main
+	rm main

@@ -41,6 +41,12 @@ int main(){
     // Imprime se é ou não estritamente binária
     if(ab_estritamente_binaria(arvore)) printf("Não é estritamente binaria!\n");
     else printf("eh estritamente binária!\n");
+ 
+    // Imprime se é ou não árvore de busca
+    if(!ab_checar_busca(arvore)) printf("Não é árvore de busca!\n");
+    else printf("eh árvore de busca!\n");
+
+    printf("profundidade: %d\n", ab_profundidade(arvore));
 
     // Apaga a árvore
     ab_apagar(&arvore);
