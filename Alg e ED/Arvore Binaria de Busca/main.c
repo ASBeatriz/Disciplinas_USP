@@ -39,6 +39,14 @@ int main(){
     printf("em ordem:\n    ");
     abb_imprimir(arvore, "emordem");
 
+    int x1 = 40;
+    if(abb_remover(arvore, x1)) printf("elemento de chave %d apagado com sucesso!\n", x1);
+    else printf("elemento de chave %d não apagado.\n", x1);
+    x1 = 20;
+    if(abb_remover(arvore, x1)) printf("elemento de chave %d apagado com sucesso!\n", x1);
+    else printf("elemento de chave %d não apagado.\n", x1);
+    abb_imprime_filhos(arvore);
+
     // Apaga a árvore
     abb_apagar(&arvore);
     if(arvore == NULL) printf("arvore apagada!\n");

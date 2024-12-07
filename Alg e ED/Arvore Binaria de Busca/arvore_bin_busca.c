@@ -179,13 +179,13 @@ void abb_imprime_filhos(ABB *arvore){
 void troca_max_esq(NO *troca, NO* no_anterior, NO* raiz){
     if(troca->dir != NULL) troca_max_esq(troca->dir, troca, raiz);
     else{
-        // muda o ponteiro do nó anterior ao que vai ser trocado
         if(raiz == no_anterior)
             no_anterior->esq = troca->esq;
         else
             no_anterior->dir = troca->esq;
 
         raiz->item = troca->item ;   // faz a troca
+        // Desaloca o nó
         free(troca);
         troca = NULL;
     }
@@ -196,27 +196,65 @@ bool remove_(NO** no, int chave){
 
     if(*no == NULL) return false;   //caso não encontrar o nó
     else if(chave_no == chave){
-        NO *aux = *no;
+        item_apagar(&((*no)->item));    //apaga o item do nó
 
         // caso o nó seja folha ou tenha um só filho (se um dos filhos é nulo, aponta para o outro)
-        if((*no)->esq == NULL){
-            *no = (*no)->dir;
-        }
-        else if((*no)->dir == NULL){
-            *no = (*no)->esq;
+        if((*no)->esq == NULL || (*no)->dir == NULL){
+            /*
+            Passo a passo:
+                - Muda o ponteiro do nó para um de seus filhos
+                - Exclui o nó
+            */
+            NO *aux = *no;
+            if((*no)->esq == NULL){
+                *no = (*no)->dir;
+            }
+            else if((*no)->dir == NULL){
+                *no = (*no)->esq;
+            }
+            free(aux);
+            aux = NULL;
         }
         else{   // caso o nó tenha dois filhos
+            /*
+            Passo a passo:
+                - Acha o nó para substituir
+                - Muda o ponteiro do nó anterior ao que vai substituir
+                - Troca o valor dos nós
+                - Exclui o nó que antes substituiu
+            */
             troca_max_esq((*no)->esq, *no, *no);
-            return true;
         }
-
-        item_apagar(&((aux)->item));    //é assim que faz mesmo?
-        free(aux);
-        aux = NULL;
+        return true;
     }
     else if(chave_no > chave) return remove_(&((*no)->esq), chave);
     else return remove_(&((*no)->dir), chave);
 }
+
+// Não sei :/
+// bool remove_it(NO** no, int chave){
+//     NO **aux = no;
+//     while(*aux != NULL){
+//         int chave_no = item_get_chave((*aux)->item);
+//         if(chave_no == chave){
+//             if((*aux)->esq == NULL){
+//                 aux = &(*aux)->dir;
+//             }
+//             else if((*aux)->dir == NULL){
+//                 aux = &(*aux)->dir;
+//             }
+//             else{
+//                 troca_max_esq((*aux)->esq, *aux, *aux);
+//             }
+//             return true;
+//         }
+//         else if(chave_no > chave)
+//             aux = &((*no)->esq);
+//         else
+//             aux = &((*no)->dir);
+//     }
+//     return false;
+// }
 
 bool abb_remover(ABB *arvore, int chave){
     if(arvore != NULL)
