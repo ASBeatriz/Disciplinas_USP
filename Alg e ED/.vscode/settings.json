@@ -7,6 +7,7 @@
         "pilha.h": "c",
         "item.h": "c",
         "string.h": "c",
-        "lista_dup_enc.h": "c"
+        "lista_dup_enc.h": "c",
+        "arvore_bin_busca.h": "c"
     }
 }
