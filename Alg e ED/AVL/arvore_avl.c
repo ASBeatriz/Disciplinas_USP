@@ -30,7 +30,7 @@ void apagar(NO **no){
 int max(int a, int b){
     return ((a>b) ? a : b);
 }
-//  TA DANDO SEGFAULT!!!
+
 int get_altura(NO *no){
     if(no == NULL){
         return -1;
@@ -42,6 +42,11 @@ int get_altura(NO *no){
     else{
         return ((max(get_altura(no->esq), get_altura(no->dir))) + 1);
     }
+}
+
+int get_FB(NO* no){
+    if(no == NULL) return 0;
+    else return get_altura(no->esq) - get_altura(no->dir);
 }
 
 // int calc_profundidade(NO *no, int p){
@@ -108,11 +113,6 @@ ITEM *busca(NO *no, int chave){
         return busca(no->esq, chave);
     else if(chave > item_get_chave(no->item))
         return busca(no->dir, chave);
-}
-
-int get_FB(NO* no){
-    if(no == NULL) return 0;
-    else return (get_altura(no->esq) - get_altura(no->dir));
 }
 
 NO *rodar_direita(NO *a){
