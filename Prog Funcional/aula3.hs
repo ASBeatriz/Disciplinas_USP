@@ -13,6 +13,7 @@ main = do --Monad
    
    let res = baskara a b c
    putStrLn $ show $ res
+   -- VER ALTERAÇÕES NA FOTO
 
 sinal x 
   | x < 0 = -1
