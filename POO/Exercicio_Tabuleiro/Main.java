@@ -3,17 +3,15 @@ import java.util.Scanner;
     public class Main {
         public static void main(String[] args) {
             Scanner scan = new Scanner(System.in);
-            int[][] mat = new int[3][3];
 
             // Leitura do tabuleiro inicial
-            for(int i=0; i<3; i++){
-                for(int j=0; j<3; j++){
-                    mat[i][j] = scan.nextInt();
-                }
-            }
-            scan.nextLine(); // tira o \n do buffer
+            String entrada = scan.nextLine();
+            String[] entrada_div = entrada.split(" ");
+            int[] valores = new int[entrada_div.length];
+            
+            for(int i=0; i<entrada_div.length; i++) valores[i] = Integer.parseInt(entrada_div[i]);
 
-            Tabuleiro tab = new Tabuleiro(mat);
+            Tabuleiro tab = new Tabuleiro(valores);
             tab.imprime_tab();
             
             // Leitura dos movimentos

@@ -1,15 +1,26 @@
 public class Tabuleiro {
     private int[][] tab;
+    private int tam_tab;
     private int zero_l;
     private int zero_c;
 
     // Construtor
-    public Tabuleiro(int[][] mat){
-        tab = mat;
+    public Tabuleiro(int[] valores){
+        // Calcula o tamanho do tabuleiro
+        tam_tab = (int)Math.sqrt(valores.length); 
+        tab = new int[tam_tab][tam_tab];
 
-        // Guardar a posição do zero no tabuleiro
-        for(int i=0; i<3; i++){
-            for(int j=0; j<3; j++){
+        // Passa os valores para a matriz que representa o tabuleiro
+        int k = 0;
+        for(int i=0; i<tam_tab; i++){
+            for(int j=0; j<tam_tab; j++){
+                tab[i][j] = valores[k++];
+            }
+        }
+
+        // Guarda a posição do zero no tabuleiro
+        for(int i=0; i<tam_tab; i++){
+            for(int j=0; j<tam_tab; j++){
                 if (tab[i][j] == 0){
                     zero_l = i;
                     zero_c = j;
@@ -19,13 +30,13 @@ public class Tabuleiro {
         }
     }   
 
-    // Função que verifica se o tabuleiro ewstá na ordem correta
+    // Função que verifica se o tabuleiro está na ordem correta
     public Boolean verifica_tab(){
-        for(int i=0; i<3; i++){
-            for(int j=0; j<3; j++){
+        for(int i=0; i<tam_tab; i++){
+            for(int j=0; j<tam_tab; j++){
                 // Condição de alguma peça no lugar errado
 
-                if (tab[i][j] != 3*i+j) return false;
+                if (tab[i][j] != tam_tab*i+j) return false;
             }
         }
         return true;
@@ -45,7 +56,7 @@ public class Tabuleiro {
         // up
         if(mov == 'u'){
             // Trocar o 0 com o de baixo
-            if(zero_l < 2){
+            if(zero_l < tam_tab-1){
                 tab[zero_l][zero_c] = tab[zero_l+1][zero_c];
                 tab[zero_l+1][zero_c] = 0;
                 zero_l++; 
@@ -63,7 +74,7 @@ public class Tabuleiro {
         // left
         else if(mov == 'l'){
             // Trocar o 0 com o da direita
-            if(zero_c < 2){
+            if(zero_c < tam_tab-1){
                 tab[zero_l][zero_c] = tab[zero_l][zero_c+1];
                 tab[zero_l][zero_c+1] = 0;
                 zero_c++;
@@ -82,17 +93,21 @@ public class Tabuleiro {
 
     // Função que imprime na tela o estado atual do tabuleiro
     public void imprime_tab(){
-        for(int i=0; i<3; i++){
-            System.out.println("+------+------+------+");
-            System.out.print("|   ");
+        for(int i=0; i<tam_tab; i++){
+            for(int k=0; k<tam_tab; k++) System.out.print("+------");
+            System.out.println("+");
+            System.out.print("|  ");
             
-            for(int j=0; j<3; j++){
-                System.out.print(tab[i][j] + "  |   ");
+            for(int j=0; j<tam_tab; j++){
+                if(tab[i][j] < 10)System.out.print(" ");   // Consertar a formatação
+                System.out.print(tab[i][j]);
+                System.out.print("  |  ");
                 
             }   
             System.out.print("\n");
         }
-        System.out.println("+------+------+------+\n");
+        for(int k=0; k<tam_tab; k++) System.out.print("+------");
+        System.out.println("+\n");
     }
 
 }
