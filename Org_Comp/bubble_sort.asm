@@ -22,9 +22,12 @@ main:
 	la s3, vetor	# s3 = armazena o endereço do vetor
 	li t0, 4	# t0 = qtde de bytes de cada elemento
 	
+# loop (i) que percorre o vetor e define a pos a ser "acertada" (s0 vai de 0 a (tam do vetor - 1))
 loop_1: bgt s0, s2, fim_loop_1
+	add s1, s2, zero
 	
-loop_2: ble s1, s0, fim_loop_2
+# loop (j) que faz as trocas dos valores
+loop_2: ble s1, s0, fim_loop_2	
 	mul t1, s1, t0	# offset para a posição s1
 	
 	add t1, s3, t1	# t1 = endereço do elemento na posição s1
@@ -40,30 +43,32 @@ loop_2: ble s1, s0, fim_loop_2
 	
 nao_troca:		
 	addi s1, s1, -1
-	
 	j loop_2
 fim_loop_2:
-	li s1, 4	# s1 = tam do vetor - 1
 	
 	addi s0, s0, 1
 	j loop_1	
 fim_loop_1:
-
-	 li t0, 4 	# qtde de bytes
-	 li t1, 0 	# contador
-	# imprime msg ordenado
+	 
+	# imprime msg "vetor ordenado"
 	 li a7, 4
 	 la a0, msg_ordenado
 	 ecall
+	 
+	 li t0, 4 	# qtde de bytes
+	 li t1, 0 	# contador
+	 
+# loop para imprimir o vetor ordenado
 loop_imprime:	bgt t1, s2, fim_loop_imprime
-	mul t2, t1, t0 
-	add t2, s3, t2
+	mul t2, t1, t0 	# offset da posição do elemento
+	add t2, s3, t2	# t2 = endereço do elemento
 	
-	
+	# imprime o elemento
 	li a7, 1
 	lw a0, 0(t2)
 	ecall
 	
+	# imprime um espaço
 	li a7, 4
 	la a0, espaco
 	ecall
