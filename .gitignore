@@ -1,4 +1,6 @@
 /**/*.noext
 /**/*.o
 /**/.vscode
-/**/Codigos_Prof
+/**/*.class
+# __ para os que não são meus
+/**/__* 

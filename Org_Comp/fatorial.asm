@@ -19,6 +19,7 @@ main:           .align 2
 		ecall		# chamada do programa
 		
 		li a7, 10 	# encerrar o programa
+        ecall
 
 
 # Função fatorial, recebe como parâmetro o a0 e retorna o a0 como resultado do fatorial	
