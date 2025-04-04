@@ -57,7 +57,7 @@ o1 = []
 o2 = [5]
 o3 = [6, 42, y, fat 5, h 8 True] -- Mesmo tipo, funciona
 -- o4 = [3, "oi", True] -- Não Funciona
-o5 = 7:o3 -- concatenação
+o5 = 7:o3 -- concatenação (cabeça e lista)
 
 -- Funções com lista
 p [] = 0
