@@ -1,0 +1,9 @@
+Características do funcional:
+    - Preguiça
+    - Função de primeira classe
+    - Função de alta ordem
+    - Função pura
+    - Recursão
+    - Sistemas de tipos
+    - Estado imutável
+    
