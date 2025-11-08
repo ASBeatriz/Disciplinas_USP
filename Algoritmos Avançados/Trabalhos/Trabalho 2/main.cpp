@@ -29,22 +29,26 @@ struct UnionFind {
     UnionFind(int n) {
         pai.resize(n);
         rank.resize(n, 0);
-        // seta o representante de cada subconjunto
+        // seta o representante de cada subconjunto como ele mesmo
         for (int i = 0; i < n; i++) pai[i] = i;
     }
 
+    // retorna o representante de um conjunto
     int find(int x) {
         if (pai[x] == x) return x;
-        return pai[x] = find(pai[x]); 
+        pai[x] = find(pai[x]); 
+        return pai[x]; 
     }
 
     bool unite(int a, int b) {
         int pai_a = find(a);
         int pai_b = find(b);
         if (pai_a == pai_b) return false;
-        // se os pais (representante) forem diferentes, faz o pai com o maior rank ser pai do outro
+        
         if (rank[pai_a] < rank[pai_b]) swap(pai_a, pai_b);
+        // se os pais (representante) forem diferentes, faz o pai com o maior rank ser pai do outro
         pai[pai_b] = pai_a;
+
         if (rank[pai_a] == rank[pai_b]) rank[pai_a]++;  // faz o desempate no rank
         return true;
     }
@@ -63,17 +67,13 @@ ParPontos bruteForce(vector<sistema>& pontos, int inicio, int fim) {
     for (int i = inicio; i < fim; i++) {
         for (int j = i + 1; j < fim; j++) {
             float d = distancia(pontos[i], pontos[j]);
-            cout << "[bruteforce] ANALISANDO " << pontos[i].nome << " " << pontos[j].nome << " dist: " << d;
-            cout << " atual: " << minPar.dist << endl;
 
+            // Faz a escolha de acordo com a distância e com a ordem de input dos pontos
+            if (d <= minPar.dist){
+                if (d == minPar.dist){
+                    if (pontos[i].indice > minPar.i) continue;
 
-            if (d <= minPar.dist) {
-                if(d == minPar.dist){
-                    // cout << "\n IGUAL: " << d << endl;
-                    if(pontos[i].nome > pontos[minPar.i].nome){
-                        cout << "NAO TROCAR\n";
-                        continue;
-                    }
+                    if (pontos[i].indice == minPar.i && pontos[j].indice > minPar.j) continue;
                 }
 
                 minPar.dist = d;
@@ -96,18 +96,14 @@ ParPontos verificaFaixa(vector<sistema>& faixa, float d, ParPontos& minPar, vect
     for (size_t i = 0; i < faixa.size(); i++) {
         for (size_t j = i + 1; j < faixa.size() && (faixa[j].y - faixa[i].y) < d; j++) {
             float dist = distancia(faixa[i], faixa[j]);
-            cout << "             ANALISANDO " << faixa[i].nome << " " << faixa[j].nome << " dist: " << dist;
-            cout << " atual: " << minPar.dist << endl;
+
+            // Faz a escolha de acordo com a distância e com a ordem de input dos pontos
             if (dist <= minPar.dist) {
                 if(dist == minPar.dist){
-                    cout << "\n IGUAL: \n";
-                    // cout << faixa[i].nome << " " << pontos[minPar.i].nome << endl;
-                    if(faixa[i].nome > pontos[minPar.i].nome){
-                        cout << "NAO TROCAR\n";
-                        continue;
-                    }
+                    if(faixa[i].indice > minPar.i) continue;
+                    
+                    else if(faixa[i].indice == minPar.i && faixa[j].indice > minPar.j) continue;
                 }
-                // else cout << "\n DIFERENTE: " << minPar.dist << " " << dist << endl;
 
                 minPar.dist = dist;
                 minPar.i = faixa[i].indice;
@@ -133,14 +129,16 @@ ParPontos closestPair(vector<sistema>& pontos, int inicio, int fim) {
     ParPontos parEsq = closestPair(pontos, inicio, meio);
     ParPontos parDir = closestPair(pontos, meio, fim);
     
-    // Encontra o menor entre as duas metades
+    // Faz a escolha entre as metades de acordo com a distância e com a ordem de input dos pontos
     ParPontos minPar;
-    if(parEsq.dist < parDir.dist) minPar = parEsq;
-    else if (parEsq.dist < parDir.dist) minPar = parEsq;
-    else{
-        (pontos[parEsq.i].nome < pontos[parDir.i].nome) ? parEsq : parDir;
-    }
-    cout << "ESCOLHIDO: " << pontos[minPar.i].nome << endl;
+    
+    if(parEsq.dist != parDir.dist) 
+        minPar = (parEsq.dist < parDir.dist) ? parEsq : parDir;
+    else if (parEsq.i != parDir.i)
+        minPar = (parEsq.i < parDir.i) ? parEsq : parDir;
+    else
+        minPar = (parEsq.j < parDir.j) ? parEsq : parDir;
+
     
     // Combinação
     vector<sistema> faixa;
@@ -184,14 +182,16 @@ int main(){
             for (int j = i + 1; j < qtdeImp; j++) {
                 float d = distancia(sistemasImp[i], sistemasImp[j]);
                 if (d <= tensaoMax) {
-                    tuneis.push_back({i, j, d});
+                    tuneis.push_back({sistemasImp[i].indice, sistemasImp[j].indice, d});
                 }
             }
         }
 
         // Ordena os tuneis por tensão crescente
         sort(tuneis.begin(), tuneis.end(), [](const tunel& a, const tunel& b) {
-            return a.dist < b.dist;
+            if(a.dist != b.dist) return a.dist < b.dist;
+            if(a.sis1 != b.sis1) return a.sis1 < b.sis1;
+            return a.sis2 < b.sis2;
         });
 
         // Kruskal
