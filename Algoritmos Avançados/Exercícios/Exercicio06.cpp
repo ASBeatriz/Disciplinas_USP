@@ -6,6 +6,7 @@
 
 using namespace std;
 pair<double, double> mid;
+const double EPSILON = 1e-9;
 
 // Determina o quadrante de um ponto
 int quad(pair<double, double> p)
@@ -92,7 +93,7 @@ vector<pair<double, double>> bruteForceHull(vector<pair<double, double>> pontos)
             double cross = (p2.first - p1.first) * (p.second - p1.second) - 
                          (p2.second - p1.second) * (p.first - p1.first);
             
-            if(cross <= 1e-9) hull.pop_back();
+            if(cross < 1e-9) hull.pop_back();
             else break;
         }
         hull.push_back(p);
@@ -105,14 +106,58 @@ vector<pair<double, double>> bruteForceHull(vector<pair<double, double>> pontos)
 int orientation(pair<double, double> a, pair<double, double> b, pair<double, double> c) {
     double res = (b.second-a.second)*(c.first-b.first) - (c.second-b.second)*(b.first-a.first);
     
-    const double EPSILON = 1e-9;
     if (abs(res) < EPSILON)  return 0;   
     if (res > 0)   return 1;
     return -1;
 }
 
+
+bool allColinearCombined(const vector<pair<double,double>>& a, const vector<pair<double,double>>& b){
+    // se conjunto total tem <=2 pontos, é colinear por definição
+    int n = a.size() + b.size();
+    if(n <= 2) return true;
+
+    // faz um array com todos os pontos
+    vector<pair<double,double>> all;
+    all.reserve(n);
+    for(auto& p: a) all.push_back(p);
+    for(auto& p: b) all.push_back(p);
+
+    // verifica se são todos colineares
+    pair<double,double> p0 = all[0];
+    int idx = 1;
+
+    pair<double,double> p1 = all[idx];
+    for(int i = idx+1; i < all.size(); ++i){
+        // calcula o produto vetorial
+        double cross = (p1.first - p0.first)*(all[i].second - p0.second) - (p1.second - p0.second)*(all[i].first - p0.first);
+        if(abs(cross) > EPSILON) return false;
+    }
+    return true;
+}
+
+
 vector<pair<double, double>> merge(vector<pair<double, double>> h1, vector<pair<double, double>> h2){
     int id1 = 0, id2 = 0, s1 = h1.size(), s2 = h2.size();
+
+    // Caso especial: se a união de todos os pontos for colinear, retorna todos ordenados
+    if(allColinearCombined(h1, h2)){
+        vector<pair<double,double>> all;
+
+        // cria um array com todos os pontos colineares
+        all.reserve(s1+s2);
+        for(auto &p: h1) all.push_back(p);
+        for(auto &p: h2) all.push_back(p);
+        
+        // ordena por x ou y
+        sort(all.begin(), all.end(), [](const pair<double,double>& a, const pair<double,double>& b){
+            if (abs(a.first - b.first) > EPSILON) return a.first < b.first;
+            return a.second < b.second;
+        });
+        
+        return all;
+    }
+
     // ponto mais a direita do h1
     for(int i=0; i<h1.size(); i++) if(h1[i].first > h1[id1].first) id1 = i;
     
