@@ -17,6 +17,8 @@ using namespace std;
 //     return(max(valMax1, valMax2));
 // }
 
+// entender o que ta acontecendo aqui (https://www.geeksforgeeks.org/dsa/optimal-strategy-for-a-game-dp-31/)
+
 int valMaximo(vector<int> &arr) {
     int n = arr.size();
     vector<vector<int>>dp(n, vector<int>(n,0));
