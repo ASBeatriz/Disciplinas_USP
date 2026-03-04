@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 2 - HTML 5</title>
+</head>
+<body>
+
+    <header>
+        <h1>Aula de HTML5</h1>
+
+        <!-- Estrutura padrão de navegação -->
+        <nav>
+            <ul>
+                <li><a href="#containers">containers HTML</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h1>Título 1</h1>
+    <h2>Título 2</h2>
+
+    <p>Utilizar títulos para questões semânticas e não necessariamente por estilo</p>
+
+    <ul>
+        <li>item</li>
+        <li>item</li>
+    </ul>
+    <ol>
+        <li>item</li>
+        <li>item</li>
+    </ol>
+
+    <a href="http://icmc.usp.br" target="_blank">Link</a>
+
+    
+    <section id="containers">
+        <h2>Containers</h2>
+        <h3>Organizando conteúdo</h3>
+        <ul>
+            <li>header: cabeçalho da página</li>
+            <li>nav: navegação da página</li>
+            <li>section: seções da página</li>
+            <li>footer: rodapé</li>
+            <li>aside: conteúdo estra que fica ao lado</li>
+            <li>article: conteúdos independentes da página</li>
+            <li>div: container genérico</li>
+        </ul>
+    </section>
+
+    <section id="atributos">
+        <h2>Atributos</h2>
+        <ul>
+            <li>id: identificador único</li>
+            <li>href: indica a localização de um recurso</li>
+            <li>src: indica a localização de uma mídia</li>
+            <li>alt: texto alternativo</li>
+            <li>class: especificar classes css</li>
+            <li>style: permite adicionar css</li>
+            <li>title: tool ip (texto quando o mouse fica em cima)</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Formulários</h2>
+        <form>
+            <!-- 'name' é útil pois é o que vai ser considerado ao enviar as informações do formulário (para json) -->
+            <label for="nome">Nome: </label><input type="text" name="nome">
+            <label for="contato">Contato: </label> <input type="email" name="contato" id="contato">
+            <textarea name="areatextual" id=""></textarea>
+            <input type="color" name="" id="">
+            <input type="date" name="" id="">
+            <label for="">Escolha:</label> 
+            <select name="" id="">
+                <option value="opcao1">opcao1</option>
+                <option value="opcao2">opcao2</option>
+                <option value="opcao3">opcao3</option>
+            </select>
+        </form>
+    </section>
+
+    <div>
+        <label for="">Escolha um:</label>
+        <input type="radio" id="html" name="fav_language" value="HTML">
+        <label for="html">HTML</label>
+        <input type="radio" id="css" name="fav_language" value="CSS">
+        <label for="css">CSS</label>
+        <input type="radio" id="javascript" name="fav_language" value="JavaScript">
+        <label for="javascript">JavaScript</label>
+    </div>
+
+    <input type="submit" value="Enviar">
+
+    <!-- Não usamos <br> :( -->
+
+</body>
+</html>
