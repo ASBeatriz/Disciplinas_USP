@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            display: flex;    /* <---------------- */
+            justify-content: space-evenly;
+            align-items: center;
+            gap: 10px;
+            height: 30px;
+            background-color: lightgray;
+        }
+        .item {
+            /* height: 20px; */
+            background-color: lightblue;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       <div class="item" style="flex-grow: 1;">1</div> 
+       <div class="item" style="order: -1; flex-grow: 1">2</div> 
+       <div class="item" style="flex-grow: 2;">3</div> 
+    </div>
+</body>
+</html>

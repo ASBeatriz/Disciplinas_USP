@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .grid-container {
+            display: grid;  /* <---------------- */
+            grid-template-columns: 1fr 2fr;
+            grid-template-rows: 10% 70% 10%;
+            height: 90vh;
+            grid-template-areas:
+            "nav nav"
+            "side content"
+            "foot foot";
+        }
+        nav {
+            grid-area: nav;
+            background-color: orange;
+        }
+        aside {
+            grid-area: side;
+            background-color: purple;
+        }
+        section {
+            grid-area: content;
+            background-color: darkcyan;
+        }
+        footer {
+            grid-area: foot;
+            background-color: whitesmoke;
+        }
+        .container {
+            display: grid;
+            height: 80vh;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 20% 50% 20%;
+            grid-template-areas:
+            "header header header header"
+            "main main . sidebar"
+            "footer footer footer footer";
+        }
+        
+        .item-a { grid-area: header; background-color: blue;}
+        .item-b { grid-area: main; background-color: pink;}
+        .item-c { grid-area: sidebar; background-color: cyan;}
+        .item-d { grid-area: footer; background-color: gray;}
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <nav>nav</nav>
+        <aside>aside</aside>
+        <section>content</section>
+        <footer>footer</footer>
+    </div>
+
+    <div class="container">
+        <div class="item-a"></div>
+        <div class="item-b"></div>
+        <div class="item-c"></div>
+        <div class="item-d"></div>
+    </div>
+</body>
+</html>
