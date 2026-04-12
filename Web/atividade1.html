@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máquina de Refrigerantes</title>
+
+<!-- ==================== CSS ==================== -->
+<style>
+        body {
+            /* display: flex;
+            justify-content: center; 
+            align-items: center;     
+            margin: 0; */
+            height: 95vh;
+            
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 10% 90%;
+            grid-template-areas:
+            "titulo titulo titulo"
+            ". maquina moedas";
+        }
+        #div-titulo{
+            grid-area: titulo;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background: #ffffff;
+            background: linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 153, 94, 1) 100%);
+        }
+
+        #div-moedas{
+            grid-area: moedas;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20%;
+        }
+        #div-moedas .moeda{
+            background-color: yellow;
+            height: 70px;
+            width: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 100px; border-style: solid; border-color: black;
+            font-size: large;
+        }
+
+
+        #div-maquina {
+            grid-area: maquina;
+            background-color: rgb(255, 94, 0);
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 10px;
+            display: grid;
+            /* height: 90%; */
+            width: 75vh;
+            gap: 2px;
+            grid-template-columns: 3fr 1fr;
+            grid-template-rows: 75% 25%;
+            grid-template-areas:
+            "vitrine botoes"
+            "bottom bottom";
+        }
+        .vitrine { 
+            grid-area: vitrine; 
+            background-color: lightblue;
+            display: flex;
+            /* padding: 3%; */
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+        .botoes { 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 5px;
+            padding: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            grid-area: botoes; 
+            border-radius: 3px; border-color: black; border-width: 1px; border-style: solid;
+        }
+        .botao-refri{
+            height: 50px;
+            width: 50px;
+            background-color: rgb(0, 140, 255);
+            color: white;
+            border-radius: 50px;
+            font-size: 16px;
+        }
+        .div-refri{
+            display: flex;
+            flex-direction: column;
+            border-radius: 3px; border-color: black; border-width: 1px; border-style: solid;
+            min-width: 30%;  
+            height: 45%;
+            row-gap: 10px;
+            align-items: center;
+        }
+        .img-refri{
+            height: 65%;
+            object-fit: contain;
+        }
+        .txt-refri{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .txt-refri #preco{
+            color: green;
+            font-weight: bold;
+        }
+        .txt-refri #index{
+            border-radius: 100px;
+            /* padding: 5px; */
+            color: white;
+            background-color: rgb(0, 140, 255);
+            font-weight: bold;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bottom { 
+            grid-area: bottom; 
+            border-radius: 3px; border-color: black; border-width: 1px; border-style: solid;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 2%;
+            padding-bottom: 2%;
+        }
+        .saida{
+            background: #000000;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(64, 0, 0, 1) 50%, rgba(255, 94, 0, 1) 100%);
+            border-left: solid 1px;
+            border-right: solid 1px;
+            width: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .saida img{
+            height: 90%;
+        }
+        .visor{
+            background: black;
+            color: white;
+            font-family: 'Franklin Gothic Medium'; font-size: 20px;
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .visor .alerta{
+            color: red;
+            font-size: 16px;
+        }
+
+        .dropzone{
+            background: lightgray;
+            width: 30%;
+            border-style: inset;
+            border-width: 5px;
+            background-color: yellow;   
+            color: green;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px; font-weight: bold; font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        </style>
+
+</head>
+
+<!-- ===================== HTML ================== -->
+<body>
+    <div id="div-titulo">MÁQUINA DE REFRIGERANTE</div>
+
+    <div id="div-maquina">
+        <div class="vitrine"></div>
+        <div class="botoes"></div>
+        <div class="bottom">
+            <div class="saida"></div>
+            <div class="visor">
+                <span> Saldo atual: R$0,00 </span>
+            </div>
+            <div class="dropzone">$</div>
+        </div>
+    </div>
+
+    <div id="div-moedas">
+        <div class="moeda" id="1">1,00</div>
+        <div class="moeda" id="50">0,50</div>
+        <div class="moeda" id="25">0,25</div>
+    </div>
+</body>
+
+<!-- ================== JAVASCRIPT ================ -->
+<script>
+    
+const URL = 'https://api.jsonbin.io/v3/b/69d64173aaba882197d7779a'
+var saldo = 0
+var data
+
+async function getDados(){
+    const resp = await fetch(URL)
+    if(resp.ok){
+        return await resp.json()
+        
+    }
+    else throw new Error('Erro na requisição. Status: ' + resp.status)
+}
+
+function verificaCompra(index){
+    const visor = document.getElementsByClassName('visor')[0]
+    let preco = data.bebidas[index].preco
+    // saldo insuficiente
+    if(preco > saldo){
+        const alerta = document.createElement('span')
+        alerta.classList.add('alerta')
+        alerta.innerText = "SALDO INSUFICIENTE!"
+        if(visor.querySelector('span.alerta') === null)
+            visor.appendChild(alerta)
+    }
+    else{
+        saldo -= preco
+        visor.textContent = "Saldo atual: R$" + saldo.toFixed(2)
+
+        //inserir imagem do refri em questão na saída
+        const saida = document.getElementsByClassName('saida')[0]
+        let img = saida.querySelector('img')
+        if(img === null){
+            img = document.createElement('img')
+        }
+        img.src = data.bebidas[index].imagem
+        saida.appendChild(img)
+    }
+
+}
+
+async function main(){
+    try{
+        data = (await getDados()).record
+        
+        const div_vitrine = document.getElementsByClassName('vitrine')[0]
+        
+        data.bebidas.forEach((refri, index) =>{
+            // cria div refri
+            const divRefri = document.createElement('div')
+            divRefri.classList.add('div-refri')
+            
+            const imgRefri = document.createElement('img')
+            imgRefri.src = refri.imagem             // add img
+            imgRefri.classList.add('img-refri')     
+            divRefri.appendChild(imgRefri)
+            
+            // add descrição
+            const txtRefri = document.createElement('div')
+            divRefri.appendChild(txtRefri)
+            txtRefri.classList.add('txt-refri')
+
+            const indexRefri = document.createElement('span')
+            indexRefri.innerText = `${index+1}`
+            indexRefri.id = 'index'
+            const nomeRefri = document.createElement('span')
+            nomeRefri.innerText = refri.sabor;
+
+            const precoRefri = document.createElement('span')
+            precoRefri.innerText = 'R$ ' + refri.preco   
+            precoRefri.id = 'preco'
+
+            txtRefri.appendChild(indexRefri)
+            txtRefri.appendChild(nomeRefri)
+            txtRefri.appendChild(precoRefri)
+
+            // adiciona na vitrine
+            div_vitrine.appendChild(divRefri)
+
+            // cria botão
+            const div_botoes = document.getElementsByClassName('botoes')[0]
+
+            const botaoRefri = document.createElement('button')
+            botaoRefri.classList.add('botao-refri')
+            botaoRefri.innerText = index+1
+            botaoRefri.addEventListener("click", () => verificaCompra(index))
+            div_botoes.appendChild(botaoRefri)
+        })
+
+        const moedas = document.getElementsByClassName('moeda')
+        for(let m of moedas){
+            m.draggable = true
+            m.addEventListener('dragstart', function(eventObj){
+                eventObj.dataTransfer.setData('valor', eventObj.target.id)
+            })
+        }
+
+        const dropzone = document.getElementsByClassName('dropzone')[0]
+        dropzone.addEventListener('drop', function(eventObj){
+            let valor = eventObj.dataTransfer.getData('valor')
+            valor = parseFloat(valor)
+            if(valor > 1) valor = valor/100
+            saldo += valor
+            document.getElementsByClassName('visor')[0].textContent = "Saldo atual: R$" + saldo.toFixed(2)
+        })
+        dropzone.addEventListener('dragover', function(e){
+            e.preventDefault()
+        })
+    }
+    catch(error){
+        console.log(error)
+    }
+}
+
+
+
+main()
+
+</script>
+</html>
