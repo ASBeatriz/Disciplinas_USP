@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Máquina de Refrigerantes</title>
+    <title>Máquina de Refrigerantes - Atividade Web</title>
 
-<!-- ==================== CSS ==================== -->
+<!-- ======================================== CSS ======================================== -->
 <style>
         body {
-            /* display: flex;
-            justify-content: center; 
-            align-items: center;     
-            margin: 0; */
             height: 95vh;
             
             display: grid;
@@ -58,7 +54,6 @@
             padding: 10px;
             border-radius: 10px;
             display: grid;
-            /* height: 90%; */
             width: 75vh;
             gap: 2px;
             grid-template-columns: 3fr 1fr;
@@ -71,7 +66,6 @@
             grid-area: vitrine; 
             background-color: lightblue;
             display: flex;
-            /* padding: 3%; */
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-evenly;
@@ -85,7 +79,6 @@
             align-items: center;
             flex-wrap: wrap;
             grid-area: botoes; 
-            border-radius: 3px; border-color: black; border-width: 1px; border-style: solid;
         }
         .botao-refri{
             height: 50px;
@@ -119,7 +112,6 @@
         }
         .txt-refri #index{
             border-radius: 100px;
-            /* padding: 5px; */
             color: white;
             background-color: rgb(0, 140, 255);
             font-weight: bold;
@@ -132,7 +124,6 @@
 
         .bottom { 
             grid-area: bottom; 
-            border-radius: 3px; border-color: black; border-width: 1px; border-style: solid;
             display: flex;
             justify-content: space-around;
             padding-top: 2%;
@@ -161,10 +152,17 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
+            border: 5px rgba(205, 0, 0, 0.596) solid;
         }
         .visor .alerta{
             color: red;
             font-size: 16px;
+        }
+        .visor .liberado{
+            color: green;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .dropzone{
@@ -184,9 +182,9 @@
 
 </head>
 
-<!-- ===================== HTML ================== -->
+<!-- ========================================= HTML ====================================== -->
 <body>
-    <div id="div-titulo">MÁQUINA DE REFRIGERANTE</div>
+    <div id="div-titulo">MÁQUINA DE REFRIGERANTES</div>
 
     <div id="div-maquina">
         <div class="vitrine"></div>
@@ -195,7 +193,7 @@
             <div class="saida"></div>
             <div class="visor">
                 <span> Saldo atual: R$0,00 </span>
-            </div>
+            </div>  
             <div class="dropzone">$</div>
         </div>
     </div>
@@ -207,13 +205,16 @@
     </div>
 </body>
 
-<!-- ================== JAVASCRIPT ================ -->
+<!-- ====================================== JAVASCRIPT ==================================== -->
 <script>
     
 const URL = 'https://api.jsonbin.io/v3/b/69d64173aaba882197d7779a'
+
+// variáveis globais
 var saldo = 0
 var data
 
+// função para obter os dados da API
 async function getDados(){
     const resp = await fetch(URL)
     if(resp.ok){
@@ -226,17 +227,24 @@ async function getDados(){
 function verificaCompra(index){
     const visor = document.getElementsByClassName('visor')[0]
     let preco = data.bebidas[index].preco
-    // saldo insuficiente
+
     if(preco > saldo){
-        const alerta = document.createElement('span')
-        alerta.classList.add('alerta')
-        alerta.innerText = "SALDO INSUFICIENTE!"
-        if(visor.querySelector('span.alerta') === null)
+        // remover mensagens anteriores do visor
+        if(visor.querySelector('span.liberado') !== null){
+            visor.querySelector('span.liberado').remove()
+        }
+        // exibir mensagem de saldo insuficiente, caso ainda não exista
+        else if(visor.querySelector('span.alerta') === null){
+            const alerta = document.createElement('span')
+            alerta.classList.add('alerta')
+            alerta.innerText = "SALDO INSUFICIENTE!"
             visor.appendChild(alerta)
+        }
     }
     else{
         saldo -= preco
-        visor.textContent = "Saldo atual: R$" + saldo.toFixed(2)
+        if (saldo > 0) visor.textContent = "Troco: R$" + saldo.toFixed(2)
+        else visor.textContent = "Saldo atual: R$" + saldo.toFixed(2)
 
         //inserir imagem do refri em questão na saída
         const saida = document.getElementsByClassName('saida')[0]
@@ -246,6 +254,20 @@ function verificaCompra(index){
         }
         img.src = data.bebidas[index].imagem
         saida.appendChild(img)
+        
+        // remover mensagens anteriores do visor
+        if(visor.querySelector('span.alerta') !== null){
+            visor.querySelector('span.alerta').remove()
+        }
+        else if(visor.querySelector('span.liberado') !== null){
+            visor.querySelector('span.liberado').remove()
+        }
+        
+        // exibir mensagem de refri liberado
+        const liberado = document.createElement('span')
+        liberado.innerText = `Refri ${data.bebidas[index].sabor} liberado.`
+        liberado.classList.add('liberado')
+        visor.appendChild(liberado)
     }
 
 }
@@ -256,6 +278,7 @@ async function main(){
         
         const div_vitrine = document.getElementsByClassName('vitrine')[0]
         
+        // adiciona os refrigerantes na vitrine
         data.bebidas.forEach((refri, index) =>{
             // cria div refri
             const divRefri = document.createElement('div')
@@ -298,6 +321,7 @@ async function main(){
             div_botoes.appendChild(botaoRefri)
         })
 
+        // adiciona funcionalidade de drag and drop para as moedas
         const moedas = document.getElementsByClassName('moeda')
         for(let m of moedas){
             m.draggable = true
@@ -309,6 +333,7 @@ async function main(){
         const dropzone = document.getElementsByClassName('dropzone')[0]
         dropzone.addEventListener('drop', function(eventObj){
             let valor = eventObj.dataTransfer.getData('valor')
+            if (valor == "") return
             valor = parseFloat(valor)
             if(valor > 1) valor = valor/100
             saldo += valor
