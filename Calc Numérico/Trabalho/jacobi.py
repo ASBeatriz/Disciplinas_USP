@@ -68,3 +68,44 @@ def solve_jacobi(A, tol=1e-10, max_iterations=100):
     print("Número máximo de iterações atingido")
 
     return A, V
+
+
+def solve_svd_jacobi(A, tol=1e-10, max_iterations=1000):
+
+    # A = U S VT
+
+    M = A.T @ A
+
+    eigenvalues_matrix, V = solve_jacobi(
+        M.copy(),
+        tol,
+        max_iterations
+    )
+
+    eigenvalues = np.diag(eigenvalues_matrix)
+
+    eigenvalues = np.maximum(eigenvalues, 0)
+
+    singular_values = np.sqrt(eigenvalues)
+
+    idx = np.argsort(singular_values)[::-1]
+
+    singular_values = singular_values[idx]
+    V = V[:, idx]
+
+    r = np.sum(singular_values > 1e-12)
+
+    singular_values = singular_values[:r]
+    V = V[:, :r]
+
+    U = np.zeros((A.shape[0], r))
+
+    for i in range(r):
+
+        U[:, i] = (
+            A @ V[:, i]
+        ) / singular_values[i]
+
+    VT = V.T
+
+    return U, singular_values, VT

@@ -2,54 +2,17 @@ import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from jacobi import solve_jacobi
+from jacobi import solve_svd_jacobi
+
+video_path = 'video.mp4'
 
 output_dir = "results"
 svd_dir = "SVDs"
+video_name = os.path.splitext(os.path.basename(video_path))[0]
+svd_file = os.path.join(svd_dir, f"{video_name}_svd_gray.npz")
 
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(svd_dir, exist_ok=True)
-
-def solve_svd_jacobi(A, tol=1e-10, max_iterations=1000):
-
-    # A = U S VT
-
-    M = A.T @ A
-
-    eigenvalues_matrix, V = solve_jacobi(
-        M.copy(),
-        tol,
-        max_iterations
-    )
-
-    eigenvalues = np.diag(eigenvalues_matrix)
-
-    eigenvalues = np.maximum(eigenvalues, 0)
-
-    singular_values = np.sqrt(eigenvalues)
-
-    idx = np.argsort(singular_values)[::-1]
-
-    singular_values = singular_values[idx]
-    V = V[:, idx]
-
-    r = np.sum(singular_values > 1e-12)
-
-    singular_values = singular_values[:r]
-    V = V[:, :r]
-
-    U = np.zeros((A.shape[0], r))
-
-    for i in range(r):
-
-        U[:, i] = (
-            A @ V[:, i]
-        ) / singular_values[i]
-
-    VT = V.T
-
-    return U, singular_values, VT
-
 
 def plotar_decaimento(S, k):
 
@@ -73,19 +36,43 @@ def plotar_decaimento(S, k):
     plt.show()
 
 
-def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=False):
+def get_gray_frames():
+    cap = cv2.VideoCapture(f"{video_name}_gray.mp4")
 
-    video_name = os.path.splitext(os.path.basename(video_path))[0]
+    if not cap.isOpened():
+        print("Erro ao abrir o vídeo em escala de cinza.")
+        return
 
-    svd_file = os.path.join(
-        svd_dir,
-        f"{video_name}_svd_gray.npz"
-    )
+    reslx = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    resly = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    # =====================================================
-    # CARREGA OU CALCULA SVD
-    # =====================================================
+    print(f"Dimensões: {reslx}x{resly}")
 
+    gray_frames = []
+
+    print("Lendo vídeo em escala de cinza...")
+
+    while True:
+
+        ret, frame = cap.read()
+
+        if not ret:
+            break
+
+        if len(frame.shape) == 3:
+            frame = frame[:, :, 0]
+
+        gray_frames.append(
+            frame.flatten()
+        )
+
+    cap.release()
+    return gray_frames, reslx, resly
+
+
+def get_SVD(svd_file, video_path, force_recompute=False):
+
+    # Verifica se o SVD já foi calculado anteriormente para evitar recálculo
     if os.path.exists(svd_file) and not force_recompute:
 
         print(f"Carregando SVD salva: {svd_file}")
@@ -100,46 +87,12 @@ def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=Fa
         reslx = int(data["reslx"])
         resly = int(data["resly"])
 
+        return A, U, S, VT, reslx, resly
+
     else:
 
-        cap = cv2.VideoCapture(video_path)
-
-        if not cap.isOpened():
-            print("Erro ao abrir o vídeo.")
-            return
-
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        print(f"Dimensões: {width}x{height}")
-
-        # Reduza se a SVD estiver demorando muito
-        # reslx, resly = width, height
-        reslx, resly = width // 2, height // 2
-
-        gray_frames = []
-
-        print("Lendo vídeo para cálculo da SVD...")
-
-        while True:
-
-            ret, frame = cap.read()
-
-            if not ret:
-                break
-
-            frame = cv2.resize(frame, (reslx, resly))
-
-            gray = cv2.cvtColor(
-                frame,
-                cv2.COLOR_BGR2GRAY
-            )
-
-            gray_frames.append(
-                gray.flatten()
-            )
-
-        cap.release()
+        # Busca o vídeo gerado após o pré-processamento
+        gray_frames, reslx, resly = get_gray_frames()
 
         A = np.array(gray_frames).T.astype(np.float64)
 
@@ -161,21 +114,16 @@ def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=Fa
 
         print(f"SVD salva em {svd_file}")
 
-    # =====================================================
-    # RECONSTRUÇÃO DO FUNDO
-    # =====================================================
+        return A, U, S, VT, reslx, resly
 
-    print(f"Reconstruindo fundo com k={k}")
 
-    L = (U[:, :k] * S[:k]) @ VT[:k, :]
-
-    foreground_matrix = np.abs(A - L)
+# nome provisorio
+def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
 
     # =====================================================
     # SEGUNDA LEITURA DO VÍDEO
     # =====================================================
 
-    cap = cv2.VideoCapture(video_path)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
@@ -183,10 +131,7 @@ def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=Fa
     # Movimento RGB
     # -----------------------------------------------------
 
-    output_rgb = os.path.join(
-        output_dir,
-        f"{video_name}_foreground_k{k}.mp4"
-    )
+    output_rgb = os.path.join(output_dir, f"{video_name}_foreground_k{k}.mp4")
 
     out_rgb = cv2.VideoWriter(
         output_rgb,
@@ -217,10 +162,7 @@ def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=Fa
     # Comparação lado a lado
     # -----------------------------------------------------
 
-    output_comparison = os.path.join(
-        output_dir,
-        f"{video_name}_comparison_k{k}.mp4"
-    )
+    output_comparison = os.path.join(output_dir, f"{video_name}_comparison_k{k}.mp4")
 
     out_comparison = cv2.VideoWriter(
         output_comparison,
@@ -232,6 +174,18 @@ def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=Fa
 
     print(f"Gerando {output_comparison}")
 
+
+    # =====================================================
+    # RECONSTRUÇÃO DO FUNDO
+    # =====================================================
+
+    print(f"Reconstruindo fundo com k={k}")
+
+    L = (U[:, :k] * S[:k]) @ VT[:k, :]
+
+    foreground_matrix = np.abs(A - L)
+
+    cap = cv2.VideoCapture(video_path)
     frame_idx = 0
 
     while True:
@@ -395,9 +349,11 @@ def process_video_svd_rgb_mask(video_path, k=5, threshold=30, force_recompute=Fa
     print(f"Comparação: {output_comparison}")
 
 
-process_video_svd_rgb_mask(
-    "video2.mp4",
-    k=5,
-    threshold=30,
-    force_recompute=False
-)
+
+def main():
+    # Calcula o SVD
+    A, U, S, VT, reslx, resly = get_SVD(svd_file, video_path, False)
+
+    postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30)
+
+main()
