@@ -117,75 +117,83 @@ def get_SVD(svd_file, video_path, force_recompute=False):
         return A, U, S, VT, reslx, resly
 
 
-# nome provisorio
-def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
+def create_comparison_frame(frame, background_uint8, foreground_gray):
 
-    # =====================================================
-    # SEGUNDA LEITURA DO VÍDEO
-    # =====================================================
+    original_panel = frame.copy()
 
-
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-
-    # -----------------------------------------------------
-    # Movimento RGB
-    # -----------------------------------------------------
-
-    output_rgb = os.path.join(output_dir, f"{video_name}_foreground_k{k}.mp4")
-
-    out_rgb = cv2.VideoWriter(
-        output_rgb,
-        fourcc,
-        20.0,
-        (reslx, resly),
-        isColor=True
+    background_panel = cv2.cvtColor(
+        background_uint8,
+        cv2.COLOR_GRAY2BGR
     )
 
-    # -----------------------------------------------------
-    # Movimento em cinza
-    # -----------------------------------------------------
-
-    output_gray = os.path.join(
-        output_dir,
-        f"{video_name}_foreground_gray_k{k}.mp4"
+    movement_panel = cv2.cvtColor(
+        foreground_gray,
+        cv2.COLOR_GRAY2BGR
     )
 
-    out_gray = cv2.VideoWriter(
-        output_gray,
-        fourcc,
-        20.0,
-        (reslx, resly),
-        isColor=False
+    cv2.putText(
+        original_panel,
+        "Original",
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (0, 255, 0),
+        2
     )
 
-    # -----------------------------------------------------
-    # Comparação lado a lado
-    # -----------------------------------------------------
-
-    output_comparison = os.path.join(output_dir, f"{video_name}_comparison_k{k}.mp4")
-
-    out_comparison = cv2.VideoWriter(
-        output_comparison,
-        fourcc,
-        20.0,
-        (reslx * 3, resly),
-        isColor=True
+    cv2.putText(
+        background_panel,
+        "Fundo (L)",
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (0, 255, 0),
+        2
     )
 
-    print(f"Gerando {output_comparison}")
+    cv2.putText(
+        movement_panel,
+        "Movimento (S)",
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (0, 255, 0),
+        2
+    )
+
+    return np.hstack([
+        original_panel,
+        background_panel,
+        movement_panel
+    ])
 
 
-    # =====================================================
-    # RECONSTRUÇÃO DO FUNDO
-    # =====================================================
+def generate_videos(A, U, S, VT, reslx, resly, video_path, k, threshold=30):
 
     print(f"Reconstruindo fundo com k={k}")
 
     L = (U[:, :k] * S[:k]) @ VT[:k, :]
-
     foreground_matrix = np.abs(A - L)
 
+
+
     cap = cv2.VideoCapture(video_path)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+
+    # Arquivos de saída
+
+    output_rgb = os.path.join(output_dir, f"{video_name}_foreground_k{k}.mp4")
+    output_gray = os.path.join(output_dir, f"{video_name}_foreground_gray_k{k}.mp4")
+    output_comparison = os.path.join(output_dir, f"{video_name}_comparison_k{k}.mp4")
+
+    # Escritores
+
+    out_rgb = cv2.VideoWriter(output_rgb, fourcc, 20.0, (reslx, resly), isColor=True)
+    out_gray = cv2.VideoWriter(output_gray, fourcc, 20.0, (reslx, resly), isColor=False)
+    out_comparison = cv2.VideoWriter(output_comparison, fourcc, 20.0, (reslx * 3, resly), isColor=True)
+
+    print("Gerando vídeos...")
+
     frame_idx = 0
 
     while True:
@@ -203,14 +211,12 @@ def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
             (reslx, resly)
         )
 
-        # =================================================
+        # ==========================================
         # Movimento (S)
-        # =================================================
+        # ==========================================
 
         foreground = foreground_matrix[:, frame_idx]
-        foreground = foreground.reshape(
-            (resly, reslx)
-        )
+        foreground = foreground.reshape((resly, reslx))
 
         foreground_gray = cv2.normalize(
             foreground,
@@ -220,13 +226,12 @@ def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
             cv2.NORM_MINMAX
         ).astype(np.uint8)
 
-        out_gray.write(
-            foreground_gray
-        )
+        # salva vídeo cinza
+        out_gray.write(foreground_gray)
 
-        # =================================================
+        # ==========================================
         # Fundo (L)
-        # =================================================
+        # ==========================================
 
         background = L[:, frame_idx]
         background = background.reshape(
@@ -239,18 +244,16 @@ def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
             255
         ).astype(np.uint8)
 
-        # =================================================
-        # Máscara
-        # =================================================
+        # ==========================================
+        # Máscara de movimento
+        # ==========================================
 
         mask = np.zeros_like(
             foreground,
             dtype=np.uint8
         )
 
-        mask[
-            foreground > threshold
-        ] = 255
+        mask[foreground > threshold] = 255
 
         kernel = np.ones(
             (3, 3),
@@ -263,9 +266,9 @@ def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
             kernel
         )
 
-        # =================================================
+        # ==========================================
         # Movimento RGB
-        # =================================================
+        # ==========================================
 
         foreground_rgb = cv2.bitwise_and(
             frame,
@@ -273,65 +276,19 @@ def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
             mask=mask
         )
 
-        out_rgb.write(
-            foreground_rgb
-        )
+        # salva vídeo com a máscara rgb
+        out_rgb.write(foreground_rgb)
 
-        # =================================================
-        # Painel comparativo
-        # =================================================
 
-        original_panel = frame.copy()
-
-        background_panel = cv2.cvtColor(
+        # Cria o frame de comparação com os vídeos
+        comparison = create_comparison_frame(
+            frame,
             background_uint8,
-            cv2.COLOR_GRAY2BGR
+            foreground_gray
         )
 
-        movement_panel = cv2.cvtColor(
-            foreground_gray,
-            cv2.COLOR_GRAY2BGR
-        )
-
-        cv2.putText(
-            original_panel,
-            "Original",
-            (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (0, 255, 0),
-            2
-        )
-
-        cv2.putText(
-            background_panel,
-            "Fundo (L)",
-            (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (0, 255, 0),
-            2
-        )
-
-        cv2.putText(
-            movement_panel,
-            "Movimento (S)",
-            (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (0, 255, 0),
-            2
-        )
-
-        comparison = np.hstack([
-            original_panel,
-            background_panel,
-            movement_panel
-        ])
-
-        out_comparison.write(
-            comparison
-        )
+        # salva vídeo de comparação
+        out_comparison.write(comparison)
 
         frame_idx += 1
 
@@ -341,19 +298,19 @@ def postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30):
     out_gray.release()
     out_comparison.release()
 
+    print("Vídeos gerados:")
+    print(output_rgb)
+    print(output_gray)
+    print(output_comparison)
+
     plotar_decaimento(S, k)
-
-    print("Concluído!")
-    print(f"Movimento RGB: {output_rgb}")
-    print(f"Movimento Cinza: {output_gray}")
-    print(f"Comparação: {output_comparison}")
-
-
 
 def main():
     # Calcula o SVD
-    A, U, S, VT, reslx, resly = get_SVD(svd_file, video_path, False)
+    A, U, S, VT, reslx, resly = get_SVD(svd_file, video_path, True)
 
-    postprocessing(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30)
+    # Faz o isolamento do fundo e gera os vídeos para comparação
+    generate_videos(A, U, S, VT, reslx, resly, video_path, k=5, threshold=30)
+
 
 main()
